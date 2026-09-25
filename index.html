@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background Remover</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8f9fa;
+    color: #202124;
+    min-height: 100vh;
+    line-height: 1.5;
+    padding: 2rem 1rem 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 2rem; }
+
+  header h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #1a73e8, #7c4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p { color: #5f6368; font-size: 0.95rem; }
+
+  /* ENV BANNER */
+  .env-banner {
+    display: none;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    border: 1px solid;
+  }
+  .env-banner.show { display: block; }
+  .env-banner.error { background: #fce8e6; border-color: #f28b82; color: #a50e0e; }
+  .env-banner.warn { background: #fef7e0; border-color: #fbbc04; color: #7a5900; }
+  .env-banner h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+  .env-banner ul { margin: 0.4rem 0 0.4rem 1.2rem; }
+  .env-banner code {
+    background: rgba(0,0,0,0.08);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-family: 'Consolas', monospace;
+  }
+
+  /* UPLOAD AREA */
+  .upload-area {
+    background: #fff;
+    border: 2px dashed #dadce0;
+    border-radius: 16px;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    transition: all 0.25s;
+    margin-bottom: 2rem;
+  }
+
+  .upload-area.dragover {
+    border-color: #1a73e8;
+    background: #e8f0fe;
+    transform: scale(1.005);
+  }
+
+  .upload-area .icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .upload-area h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+    color: #202124;
+  }
+
+  .upload-area .hint {
+    color: #5f6368;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Visible file input styled as button */
+  .file-btn-wrap {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .file-btn-wrap input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 100px;
+    z-index: 2;
+  }
+
+  .file-btn-label {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: #1a73e8;
+    color: #fff;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(26,115,232,0.3);
+    pointer-events: none;
+    transition: background 0.2s;
+  }
+
+  .file-btn-wrap:hover .file-btn-label {
+    background: #1557b0;
+  }
+
+  /* RESULTS */
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .results-header h2 { font-size: 1.1rem; font-weight: 700; }
+  .results-header .count { color: #5f6368; font-weight: 400; font-size: 0.9rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .preview {
+    position: relative;
+    aspect-ratio: 1;
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+      linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+      linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    border-bottom: 1px solid #dadce0;
+  }
+
+  .preview img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .overlay.hidden { display: none; }
+
+  .spinner {
+    width: 38px; height: 38px;
+    border: 3px solid #e8f0fe;
+    border-top-color: #1a73e8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .overlay .msg {
+    font-size: 0.85rem;
+    color: #202124;
+    font-weight: 600;
+  }
+
+  .overlay .sub {
+    font-size: 0.72rem;
+    color: #5f6368;
+  }
+
+  .pbar {
+    width: 70%; max-width: 200px;
+    height: 5px;
+    background: #e8f0fe;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .pbar-fill {
+    height: 100%; width: 0%;
+    background: #1a73e8;
+    transition: width 0.3s;
+  }
+
+  .card-body { padding: 0.9rem; display: flex; flex-direction: column; gap: 0.65rem; }
+
+  .status {
+    font-size: 0.78rem;
+    color: #5f6368;
+    text-align: center;
+    min-height: 1rem;
+  }
+
+  .status.ok { color: #1e8e3e; }
+  .status.err { color: #d93025; }
+
+  .swatches { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; }
+
+  .swatch {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #dadce0;
+    transition: transform 0.15s;
+  }
+
+  .swatch:hover { transform: scale(1.15); }
+
+  .colorInput {
+    width: 30px; height: 22px;
+    border: 1px solid #dadce0;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0;
+    background: none;
+  }
+
+  .actions { display: flex; gap: 0.4rem; margin-top: auto; }
+
+  .actions button, .actions a {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+
+  .btn-remove { background: #fce8e6; color: #d93025; }
+  .btn-remove:hover { background: #d93025; color: #fff; }
+
+  .btn-download {
+    background: #1a73e8;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(26,115,232,0.3);
+  }
+  .btn-download:hover { background: #1557b0; }
+
+  .toast {
+    position: fixed;
+    bottom: 1.5rem; left: 50%;
+    transform: translate(-50%, 20px);
+    padding: 0.7rem 1.2rem;
+    background: #202124;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.err { background: #d93025; }
+  .toast.ok { background: #1e8e3e; }
+
+  .debug {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #202124;
+    color: #e8eaed;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .debug.show { display: block; }
+
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .upload-area { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>ছবির ব্যাকগ্রাউন্ড রিমুভ করুন</h1>
+    <p>১০০% ফ্রি · ব্রাউজারেই চলে</p>
+  </header>
+
+  <!-- Environment check banner -->
+  <div class="env-banner" id="envBanner"></div>
+
+  <!-- Upload area -->
+  <div class="upload-area" id="dropZone">
+    <span class="icon">🖼️</span>
+    <h3>ছবি আপলোড করুন</h3>
+    <p class="hint">ড্র্যাগ করে ছাড়ুন অথবা নিচের বাটনে ক্লিক করুন · একাধিক ছবি সাপোর্টেড</p>
+
+    <!-- সবচেয়ে নির্ভরযোগ্য পদ্ধতি: visible input + styled label overlay -->
+    <div class="file-btn-wrap">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <span class="file-btn-label">📁 ছবি সিলেক্ট করুন</span>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <section class="results" id="results">
+    <div class="results-header">
+      <h2>ফলাফল <span class="count" id="resultCount"></span></h2>
+    </div>
+    <div class="grid" id="items"></div>
+  </section>
+
+  <div class="debug" id="debug"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ==================== Helpers ==================== */
+  const $ = id => document.getElementById(id);
+  const toastEl = $('toast');
+  const envBanner = $('envBanner');
+  const debugEl = $('debug');
+
+  let toastTimer;
+  function toast(msg, type) {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3000);
+  }
+
+  const debugLogs = [];
+  function debug(msg) {
+    debugLogs.push('[' + new Date().toLocaleTimeString() + '] ' + msg);
+    debugEl.textContent = debugLogs.join('\n');
+    console.log(msg);
+  }
+
+  function showDebug() {
+    debugEl.classList.add('show');
+  }
+
+  /* ==================== Environment Check ==================== */
+  function checkEnv() {
+    const problems = [];
+    const warnings = [];
+
+    debug('Protocol: ' + location.protocol);
+    debug('Secure context: ' + window.isSecureContext);
+    debug('Hostname: ' + (location.hostname || '(empty)'));
+
+    if (location.protocol === 'file:') {
+      problems.push('আপনি ফাইলটি <code>file://</code> দিয়ে খুলেছেন। এভাবে ES modules, WebAssembly ও CDN লাইব্রেরি লোড হয় না।');
+    }
+
+    if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      problems.push('পেজটি <b>Secure Context</b>-এ চলছে না (<code>crypto.subtle</code> পাওয়া যাচ্ছে না)। <code>localhost</code> বা HTTPS দরকার।');
+    }
+
+    if (typeof WebAssembly !== 'object') {
+      problems.push('এই ব্রাউজারে <b>WebAssembly</b> নেই — AI মডেল চলবে না।');
+    } else {
+      // WebAssembly SIMD check
+      let simdOk = false;
+      try {
+        // SIMD-enabled wasm module (returns i32x4.splat(0))
+        const simdBytes = new Uint8Array([
+          0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,
+          65,0,253,15,11
+        ]);
+        simdOk = WebAssembly.validate(simdBytes);
+      } catch (e) {
+        simdOk = false;
+      }
+      debug('WASM SIMD supported: ' + simdOk);
+      if (!simdOk) {
+        problems.push('এই ব্রাউজারে <b>WebAssembly SIMD</b> নেই — AI মডেল লোড হবে না। Chrome 91+, Edge 91+, Firefox 89+, Safari 16.4+ প্রয়োজন।');
+      }
+    }
+
+    if (!window.crypto || !window.crypto.subtle) {
+      problems.push('এই পেজে <code>crypto.subtle</code> নেই — লাইব্রেরি এটা ছাড়া চলে না।');
+    }
+
+    if (typeof fetch !== 'function') {
+      problems.push('<code>fetch</code> API নেই — ছবি/মডেল ডাউনলোড হবে না।');
+    }
+
+    if (typeof createImageBitmap !== 'function') {
+      warnings.push('createImageBitmap নেই — কিছু ক্ষেত্রে প্রসেসিং ধীর হতে পারে।');
+    }
+
+    if (typeof SharedArrayBuffer !== 'function' || !window.crossOriginIsolated) {
+      warnings.push('Cross-Origin Isolation নেই, তাই <code>SharedArrayBuffer</code> কাজ করবে না। টুল চলবে তবে <b>একটু ধীর</b>। (এটা স্বাভাবিক, চিন্তার কিছু নেই।)');
+    }
+
+    if (problems.length) {
+      envBanner.className = 'env-banner error show';
+      envBanner.innerHTML =
+        '<h3>⚠️ এই এনভায়রনমেন্টে টুলটি চলবে না</h3>' +
+        '<ul>' + problems.map(p => '<li>' + p + '</li>').join('') + '</ul>' +
+        '<p><b>সমাধান:</b> ফাইলটি <code>localhost</code>-এ পরিবেশন করুন। যেমন:</p>' +
+        '<ul>' +
+        '<li>VS Code → <b>Live Server</b> এক্সটেনশন → <code>index.html</code>-এ রাইট ক্লিক → <i>Open with Live Server</i></li>' +
+        '<li>অথবা টার্মিনালে ফোল্ডারে গিয়ে: <code>npx serve</code> → তারপর <code>http://localhost:3000</code> খুলুন</li>' +
+        '<li>অথবা: <code>python -m http.server 8000</code> → <code>http://localhost:8000</code></li>' +
+        '</ul>' +
+        '<p>তারপর আবার চেষ্টা করুন। প্রথমবার AI মডেল ~২০ MB ডাউনলোড হবে (একবারই)।</p>';
+      return false;
+    }
+
+    if (warnings.length) {
+      envBanner.className = 'env-banner warn show';
+      envBanner.innerHTML =
+        '<h3>ℹ️ তথ্য</h3>' +
+        '<ul>' + warnings.map(w => '<li>' + w + '</li>').join('') + '</ul>';
+    }
+
+    return true;
+  }
+
+  /* ==================== Library Loader ==================== */
+  let libsPromise = null;
+  function loadLibs() {
+    if (!libsPromise) {
+      debug('Loading @imgly/background-removal & jszip from CDN...');
+      libsPromise = Promise.all([
+        import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm'),
+        import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm')
+      ]).then(([bg, zip]) => {
+        const removeBackground = bg.removeBackground || (bg.default && bg.default.removeBackground) || bg.default;
+        debug('Libraries loaded. removeBackground = ' + typeof removeBackground);
+        if (typeof removeBackground !== 'function') {
+          throw new Error('removeBackground ফাংশন পাওয়া যায়নি');
+        }
+        return { removeBackground, JSZip: zip.default || zip };
+      }).catch(err => {
+        libsPromise = null;
+        debug('Library load failed: ' + err.message);
+        throw new Error('লাইব্রেরি লোড হয়নি — ইন্টারনেট বা CDN সমস্যা। (' + err.message + ')');
+      });
+    }
+    return libsPromise;
+  }
+
+  /* ==================== DOM refs ==================== */
+  const dropZone = $('dropZone');
+  const fileInput = $('fileInput');
+  const results = $('results');
+  const itemsEl = $('items');
+  const resultCount = $('resultCount');
+
+  /* ==================== File Input ==================== */
+  fileInput.addEventListener('change', function (e) {
+    const files = Array.from(e.target.files || []).filter(f => f.type && f.type.startsWith('image/'));
+    debug('File input change: ' + files.length + ' image(s)');
+    fileInput.value = '';
+    if (files.length) handleFiles(files);
+    else toast('কোনো ছবি সিলেক্ট হয়নি', 'err');
+  });
+
+  /* ==================== Drag & Drop ==================== */
+  ['dragenter', 'dragover'].forEach(ev =>
+    dropZone.addEventListener(ev, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('dragover');
+    })
+  );
+  ['dragleave', 'drop'].forEach(ev =>
+    dropZone.addEventListener(ev, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (ev === 'dragleave' && dropZone.contains(e.relatedTarget)) return;
+      dropZone.classList.remove('dragover');
+    })
+  );
+  dropZone.addEventListener('drop', function (e) {
+    const files = Array.from(e.dataTransfer.files || []).filter(f => f.type && f.type.startsWith('image/'));
+    debug('Dropped: ' + files.length + ' image(s)');
+    if (files.length) handleFiles(files);
+    else toast('কোনো ছবি পাওয়া যায়নি', 'err');
+  });
+
+  // কার্ডের ফাঁকা জায়গায় ক্লিক করলে ইনপুট ট্রিগার
+  dropZone.addEventListener('click', function (e) {
+    if (e.target.closest('.file-btn-wrap')) return; // ইনপুট নিজেই ওপেন করবে
+    fileInput.click();
+  });
+
+  /* ==================== State & Processing ==================== */
+  const items = [];
+  let nextId = 0;
+
+  function handleFiles(files) {
+    const newCards = [];
+    for (const file of files) {
+      const item = {
+        id: nextId++,
+        file: file,
+        noBgImg: null,
+        resultBlob: null,
+        bg: { type: 'transparent' }
+      };
+      items.push(item);
+      const card = buildCard(item);
+      itemsEl.appendChild(card);
+      newCards.push(card);
+      processItem(item);
+    }
+    results.classList.add('show');
+    updateCount();
+    toast(files.length + 'টি ছবি যোগ হয়েছে', 'ok');
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (newCards[0]) {
+          newCards[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          newCards[0].style.boxShadow = '0 0 0 3px #1a73e8';
+          setTimeout(() => { newCards[0].style.boxShadow = ''; }, 900);
+        }
+      }, 80);
+    });
+  }
+
+  function updateCount() {
+    resultCount.textContent = '(' + items.length + 'টি)';
+    if (!items.length) results.classList.remove('show');
+  }
+
+  /* ==================== Card UI ==================== */
+  function buildCard(item) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="preview">' +
+        '<img class="preview-img" alt="preview">' +
+        '<div class="overlay">' +
+          '<div class="spinner"></div>' +
+          '<div class="msg">প্রস্তুত হচ্ছে…</div>' +
+          '<div class="sub">প্রথমবার ~২০MB মডেল ডাউনলোড হবে</div>' +
+          '<div class="pbar"><div class="pbar-fill"></div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="status">অপেক্ষা করুন…</div>' +
+        '<div class="swatches"></div>' +
+        '<div class="actions">' +
+          '<button type="button" class="btn-remove">🗑️ মুছুন</button>' +
+          '<a class="btn-download" download="result.png" style="display:none;">⬇️ ডাউনলোড</a>' +
+        '</div>' +
+      '</div>';
+
+    item.el = {
+      card: card,
+      img: card.querySelector('.preview-img'),
+      overlay: card.querySelector('.overlay'),
+      msg: card.querySelector('.msg'),
+      sub: card.querySelector('.sub'),
+      pfill: card.querySelector('.pbar-fill'),
+      status: card.querySelector('.status'),
+      dl: card.querySelector('.btn-download')
+    };
+
+    // Swatches
+    const swWrap = card.querySelector('.swatches');
+    const swatches = [
+      { name: 'স্বচ্ছ', val: 'transparent', css: 'repeating-conic-gradient(#dadce0 0 25%, #fff 0 50%) 50% / 8px 8px' },
+      { name: 'সাদা', val: '#ffffff', css: '#ffffff' },
+      { name: 'কালো', val: '#000000', css: '#000000' },
+      { name: 'লাল', val: '#ea4335', css: '#ea4335' },
+      { name: 'সবুজ', val: '#34a853', css: '#34a853' },
+      { name: 'নীল', val: '#4285f4', css: '#4285f4' },
+      { name: 'হলুদ', val: '#fbbc04', css: '#fbbc04' },
+      { name: 'বেগুনি', val: '#a142f4', css: '#a142f4' }
+    ];
+    swatches.forEach(s => {
+      const sw = document.createElement('div');
+      sw.className = 'swatch';
+      sw.title = s.name;
+      sw.style.background = s.css;
+      sw.addEventListener('click', () => {
+        item.bg = s.val === 'transparent' ? { type: 'transparent' } : { type: 'color', value: s.val };
+        updateResult(item);
+      });
+      swWrap.appendChild(sw);
+    });
+
+    const colorInput = document.createElement('input');
+    colorInput.type = 'color';
+    colorInput.className = 'colorInput';
+    colorInput.value = '#ffffff';
+    colorInput.title = 'কাস্টম রঙ';
+    colorInput.addEventListener('input', () => {
+      item.bg = { type: 'color', value: colorInput.value };
+      updateResult(item);
+    });
+    swWrap.appendChild(colorInput);
+
+    // Remove
+    card.querySelector('.btn-remove').addEventListener('click', () => {
+      card.style.transition = 'all 0.25s';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        card.remove();
+        const i = items.indexOf(item);
+        if (i >= 0) items.splice(i, 1);
+        updateCount();
+      }, 250);
+    });
+
+    return card;
+  }
+
+  /* ==================== Process Item ==================== */
+  async function processItem(item) {
+    const el = item.el;
+    el.img.src = URL.createObjectURL(item.file);
+
+    try {
+      const { removeBackground } = await loadLibs();
+
+      const blob = await removeBackground(item.file, {
+        model: 'isnet_fp16',
+        output: { format: 'image/png' },
+        progress: function (key, current, total) {
+          const pct = total ? Math.min(100, Math.round((current / total) * 100)) : 0;
+          if (key && key.indexOf('fetch') === 0) {
+            el.msg.textContent = 'AI মডেল ডাউনলোড ' + pct + '%';
+            el.sub.textContent = 'একবারই ডাউনলোড হবে, এরপর ক্যাশ থেকে চলবে';
+          } else if (key && key.indexOf('compute') === 0) {
+            el.msg.textContent = 'প্রসেসিং ' + pct + '%';
+            el.sub.textContent = 'ছবির ব্যাকগ্রাউন্ড আলাদা করা হচ্ছে…';
+          } else {
+            el.msg.textContent = 'প্রস্তুত হচ্ছে… ' + pct + '%';
+          }
+          el.pfill.style.width = pct + '%';
+        }
+      });
+
+      item.noBgImg = await loadImg(URL.createObjectURL(blob));
+      el.overlay.classList.add('hidden');
+      el.status.textContent = 'প্রস্তুত ✓';
+      el.status.className = 'status ok';
+      await updateResult(item);
+    } catch (err) {
+      debug('Process error: ' + (err && err.message));
+      if (err && err.stack) debug(err.stack);
+      el.overlay.classList.add('hidden');
+      el.status.textContent = 'সমস্যা: ' + (err && err.message ? err.message : err);
+      el.status.className = 'status err';
+      showDebug();
+      toast('প্রসেসিং ব্যর্থ — নিচে বিস্তারিত দেখুন', 'err');
+    }
+  }
+
+  function loadImg(src, cors) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      if (cors) img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('ছবি লোড হয়নি'));
+      img.src = src;
+    });
+  }
+
+  /* ==================== Composite result ==================== */
+  async function updateResult(item) {
+    if (!item.noBgImg) return;
+    const w = item.noBgImg.naturalWidth;
+    const h = item.noBgImg.naturalHeight;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    try {
+      const bg = item.bg;
+      if (bg.type === 'color') {
+        ctx.fillStyle = bg.value;
+        ctx.fillRect(0, 0, w, h);
+      }
+      ctx.drawImage(item.noBgImg, 0, 0);
+
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(b => {
+          if (!b) return reject(new Error('ক্যানভাস এক্সপোর্ট হয়নি'));
+          item.resultBlob = b;
+          const url = URL.createObjectURL(b);
+          item.el.img.src = url;
+          item.el.dl.href = url;
+          item.el.dl.download = 'no-bg-' + (item.id + 1) + '.png';
+          item.el.dl.style.display = 'inline-flex';
+          resolve();
+        }, 'image/png');
+      });
+    } catch (e) {
+      debug('Composite error: ' + e.message);
+    }
+  }
+
+  /* ==================== Boot ==================== */
+  debug('Page loaded at ' + location.href);
+  const ok = checkEnv();
+  if (ok) {
+    debug('Environment OK. Libraries will load on first upload.');
+  }
+
+})();
+</script>
+</body>
+</html>
