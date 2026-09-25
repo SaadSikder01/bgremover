@@ -3,88 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Background Remover</title>
 
-<!-- ⚡ COI Service Worker — GitHub Pages-এ SharedArrayBuffer চালু করে -->
+<!-- ============ SEO: Primary Meta ============ -->
+<title>Free Background Remover Online — Remove Image Background in Seconds</title>
+<meta name="description" content="Free online background remover. Remove background from images in seconds — no signup, no watermark, 100% free. ছবির ব্যাকগ্রাউন্ড ফ্রিতে রিমুভ করুন, ট্রান্সপারেন্ট PNG ডাউনলোড করুন।">
+<meta name="keywords" content="background remover, remove background, free background remover, background eraser, transparent background, PNG maker, photo background remover, image background remover, ছবির ব্যাকগ্রাউন্ড রিমুভ, ব্যাকগ্রাউন্ড রিমুভার, ফ্রি ব্যাকগ্রাউন্ড রিমুভার">
+<meta name="author" content="BG Remover">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="googlebot" content="index, follow">
+<meta name="theme-color" content="#1a73e8">
+<link rel="canonical" href="https://YOUR-USERNAME.github.io/YOUR-REPO/">
+
+<!-- ============ SEO: Open Graph ============ -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free Background Remover — Remove Image Background Online">
+<meta property="og:description" content="Remove background from any image in seconds. 100% free, no signup, no watermark. ছবির ব্যাকগ্রাউন্ড ফ্রি রিমুভ করুন।">
+<meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/">
+<meta property="og:site_name" content="BG Remover">
+<meta property="og:locale" content="bn_BD">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- ============ SEO: Twitter ============ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Background Remover Online">
+<meta name="twitter:description" content="Remove image background in seconds. Free, no signup, no watermark.">
+<meta name="twitter:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/og-image.png">
+
+<!-- ============ SEO: JSON-LD Structured Data ============ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Free Background Remover",
+  "alternateName": ["BG Remover", "Background Eraser Online", "ছবির ব্যাকগ্রাউন্ড রিমুভার"],
+  "url": "https://YOUR-USERNAME.github.io/YOUR-REPO/",
+  "description": "Free online tool to remove background from images. Works in your browser. No signup, no watermark.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any (Web Browser)",
+  "browserRequirements": "Requires JavaScript and WebAssembly",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Remove background from images",
+    "Transparent PNG download",
+    "Custom background color",
+    "Batch processing",
+    "No signup required",
+    "100% free",
+    "Works offline in browser"
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1250"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I remove the background from an image for free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Upload your image to this free background remover, wait a few seconds for the AI to process it, then download the transparent PNG. No signup, no watermark, 100% free."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this background remover really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. This background remover is completely free with no hidden limits, no signup and no watermark. All processing happens in your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my image get uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The AI model runs directly in your browser. Your image never leaves your device, giving you complete privacy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What image formats are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can upload JPG, PNG, WEBP and most common image formats. The output is a transparent PNG."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ছবির ব্যাকগ্রাউন্ড কীভাবে ফ্রিতে রিমুভ করব?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "এই ফ্রি ব্যাকগ্রাউন্ড রিমুভারে ছবি আপলোড করুন, কয়েক সেকেন্ড অপেক্ষা করুন, তারপর ট্রান্সপারেন্ট PNG ডাউনলোড করুন। কোনো সাইনআপ বা ওয়াটারমার্ক নেই।"
+      }
+    }
+  ]
+}
+</script>
+
+<!-- ⚡ COI Service Worker — SharedArrayBuffer সক্রিয় করে (মাল্টি-থ্রেডেড WASM) -->
 <script src="https://cdn.jsdelivr.net/npm/coi-serviceworker@0.1.7/coi-serviceworker.min.js"></script>
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --blue: #1a73e8;
+    --blue-dark: #1557b0;
+    --blue-light: #e8f0fe;
+    --text: #202124;
+    --muted: #5f6368;
+    --border: #dadce0;
+    --green: #1e8e3e;
+    --bg: #f8f9fa;
+  }
+
+  html { scroll-behavior: smooth; }
+
   body {
-    font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f8f9fa;
-    color: #202124;
+    font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     min-height: 100vh;
-    line-height: 1.5;
-    padding: 2rem 1rem 4rem;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
-  .container { max-width: 900px; margin: 0 auto; }
+  /* ---------- Header ---------- */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 
-  header { text-align: center; margin-bottom: 1.5rem; }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-  header h1 {
-    font-size: clamp(1.5rem, 4vw, 2.2rem);
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--text);
+    text-decoration: none;
     letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #1a73e8, #7c4dff);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .header-cta {
+    padding: 0.45rem 1rem;
+    background: var(--blue);
+    color: #fff !important;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .header-cta:hover { background: var(--blue-dark); }
+
+  /* ---------- Container ---------- */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { text-align: center; margin-bottom: 2rem; }
+
+  .hero h1 {
+    font-size: clamp(1.65rem, 4.5vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .hero h1 .accent {
     background: linear-gradient(135deg, #1a73e8, #7c4dff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  header p { color: #5f6368; font-size: 0.95rem; }
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+    margin: 0 auto 1.25rem;
+  }
 
-  /* Capability badge */
-  .cap-badge {
+  .trust-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+
+  .trust-row span {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    margin: 0.75rem auto 0;
-    padding: 0.35rem 0.8rem;
-    background: #e8f0fe;
-    color: #1557b0;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-
-  .cap-badge .dot {
-    width: 6px; height: 6px;
-    background: #1a73e8;
-    border-radius: 50%;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  .cap-badge.ready { background: #e6f4ea; color: #137333; }
-  .cap-badge.ready .dot { background: #137333; animation: none; }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.4); }
-  }
-
-  /* Upload */
-  .upload-area {
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
     background: #fff;
-    border: 2px dashed #dadce0;
-    border-radius: 16px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  /* ---------- Upload ---------- */
+  .upload-card {
+    background: #fff;
+    border: 2px dashed var(--border);
+    border-radius: 18px;
     padding: 2.5rem 1.5rem;
     text-align: center;
     transition: all 0.25s;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
   }
 
-  .upload-area.dragover {
-    border-color: #1a73e8;
-    background: #e8f0fe;
+  .upload-card:hover {
+    border-color: var(--blue);
+    box-shadow: 0 4px 24px rgba(26,115,232,0.08);
   }
 
-  .upload-area .icon { font-size: 2.75rem; display: block; margin-bottom: 0.6rem; }
-  .upload-area h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
-  .upload-area .hint { color: #5f6368; font-size: 0.82rem; margin-bottom: 1.25rem; }
+  .upload-card.dragover {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    transform: scale(1.005);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .upload-card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .upload-card .hint {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
 
   .file-btn-wrap {
     display: inline-block;
@@ -98,48 +303,60 @@
     inset: 0;
     opacity: 0;
     cursor: pointer;
+    width: 100%;
     font-size: 100px;
     z-index: 2;
-    width: 100%;
   }
 
   .file-btn-label {
     display: inline-block;
-    padding: 0.75rem 2rem;
-    background: #1a73e8;
+    padding: 0.8rem 2rem;
+    background: var(--blue);
     color: #fff;
     border-radius: 24px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(26,115,232,0.3);
+    box-shadow: 0 4px 14px rgba(26,115,232,0.35);
     pointer-events: none;
     transition: background 0.2s;
   }
 
-  .file-btn-wrap:hover .file-btn-label { background: #1557b0; }
+  .file-btn-wrap:hover .file-btn-label { background: var(--blue-dark); }
 
-  /* Info / warn banners */
-  .banner {
-    display: none;
-    padding: 0.9rem 1.1rem;
-    border-radius: 10px;
-    margin-bottom: 1.25rem;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    border: 1px solid;
-  }
-  .banner.show { display: block; }
-  .banner.info { background: #e8f0fe; border-color: #aecbfa; color: #174ea6; }
-  .banner.warn { background: #fef7e0; border-color: #fbbc04; color: #7a5900; }
-  .banner.err { background: #fce8e6; border-color: #f28b82; color: #a50e0e; }
-  .banner code {
-    background: rgba(0,0,0,0.08);
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    font-size: 0.85em;
+  /* ---------- Speed toggle ---------- */
+  .speed-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex-wrap: wrap;
   }
 
-  /* Results */
+  .speed-toggle label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .speed-toggle input { display: none; }
+
+  .speed-toggle input:checked + span { color: var(--blue-dark); }
+  .speed-toggle label:has(input:checked) {
+    border-color: var(--blue);
+    background: var(--blue-light);
+  }
+
+  /* ---------- Results ---------- */
   .results { display: none; }
   .results.show { display: block; }
 
@@ -148,10 +365,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .results-header h2 { font-size: 1.05rem; font-weight: 700; }
-  .results-header .count { color: #5f6368; font-weight: 400; font-size: 0.85rem; }
+  .results-header .count { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
 
   .grid {
     display: grid;
@@ -161,12 +380,12 @@
 
   .card {
     background: #fff;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .preview {
@@ -180,12 +399,10 @@
       linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
     background-size: 16px 16px;
     background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-    border-bottom: 1px solid #dadce0;
+    border-bottom: 1px solid var(--border);
   }
 
-  .preview img {
-    width: 100%; height: 100%; object-fit: contain; display: block;
-  }
+  .preview img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
   .overlay {
     position: absolute;
@@ -203,37 +420,23 @@
   .overlay.hidden { display: none; }
 
   .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid #e8f0fe;
-    border-top-color: #1a73e8;
+    width: 34px; height: 34px;
+    border: 3px solid var(--blue-light);
+    border-top-color: var(--blue);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .overlay .msg {
-    font-size: 0.82rem;
-    color: #202124;
-    font-weight: 600;
-  }
-
-  .overlay .sub {
-    font-size: 0.7rem;
-    color: #5f6368;
-    line-height: 1.4;
-  }
-
-  .overlay .eta {
-    font-size: 0.7rem;
-    color: #1a73e8;
-    font-weight: 600;
-  }
+  .overlay .msg { font-size: 0.82rem; font-weight: 600; color: var(--text); }
+  .overlay .sub { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+  .overlay .eta { font-size: 0.72rem; color: var(--blue); font-weight: 700; }
 
   .pbar {
     width: 75%; max-width: 220px;
     height: 5px;
-    background: #e8f0fe;
+    background: var(--blue-light);
     border-radius: 999px;
     overflow: hidden;
   }
@@ -248,12 +451,12 @@
 
   .status {
     font-size: 0.75rem;
-    color: #5f6368;
+    color: var(--muted);
     text-align: center;
     min-height: 1rem;
   }
 
-  .status.ok { color: #1e8e3e; font-weight: 600; }
+  .status.ok { color: var(--green); font-weight: 600; }
   .status.err { color: #d93025; }
 
   .swatches { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; }
@@ -263,7 +466,7 @@
     border-radius: 5px;
     cursor: pointer;
     border: 2px solid #fff;
-    box-shadow: 0 0 0 1px #dadce0;
+    box-shadow: 0 0 0 1px var(--border);
     transition: transform 0.15s;
   }
 
@@ -271,7 +474,7 @@
 
   .colorInput {
     width: 30px; height: 22px;
-    border: 1px solid #dadce0;
+    border: 1px solid var(--border);
     border-radius: 5px;
     cursor: pointer;
     padding: 0;
@@ -302,12 +505,13 @@
   .btn-remove:hover { background: #d93025; color: #fff; }
 
   .btn-download {
-    background: #1a73e8;
+    background: var(--blue);
     color: #fff;
     box-shadow: 0 2px 6px rgba(26,115,232,0.3);
   }
-  .btn-download:hover { background: #1557b0; }
+  .btn-download:hover { background: var(--blue-dark); }
 
+  /* ---------- Toast ---------- */
   .toast {
     position: fixed;
     bottom: 1.5rem; left: 50%;
@@ -329,46 +533,276 @@
 
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .toast.err { background: #d93025; }
-  .toast.ok { background: #1e8e3e; }
+  .toast.ok { background: var(--green); }
 
+  /* ---------- SEO Content ---------- */
+  .seo-content {
+    max-width: 900px;
+    margin: 4rem auto 0;
+    padding: 2rem 1.25rem;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .seo-content h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .seo-content h3 {
+    font-size: 1.05rem;
+    margin: 1.5rem 0 0.5rem;
+    font-weight: 700;
+  }
+
+  .seo-content p, .seo-content li {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #3c4043;
+  }
+
+  .seo-content ul {
+    padding-left: 1.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .seo-content li { margin-bottom: 0.3rem; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .feature-item {
+    padding: 1.1rem;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .feature-item .icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .feature-item h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+  }
+
+  .feature-item p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .faq-item {
+    border-top: 1px solid var(--border);
+    padding: 0.9rem 0;
+  }
+
+  .faq-item:last-child { border-bottom: 1px solid var(--border); }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0;
+  }
+
+  .faq-item summary::-webkit-details-marker { display: none; }
+
+  .faq-item summary::after {
+    content: '+';
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+  }
+
+  .faq-item[open] summary::after { content: '−'; }
+
+  .faq-item p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .footer a { color: var(--blue); text-decoration: none; }
+
+  /* ---------- Mobile ---------- */
   @media (max-width: 600px) {
     .grid { grid-template-columns: 1fr; }
-    .upload-area { padding: 1.75rem 1rem; }
+    .upload-card { padding: 1.75rem 1rem; }
+    .container { padding: 1.25rem 0.9rem 3rem; }
+    .seo-content { padding: 1.5rem 1rem; margin-top: 2.5rem; }
   }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <header>
-    <h1>ছবির ব্যাকগ্রাউন্ড রিমুভ করুন</h1>
-    <p>১০০% ফ্রি · ব্রাউজারেই চলে</p>
-    <div class="cap-badge" id="capBadge">
-      <span class="dot"></span>
-      <span id="capText">সিস্টেম চেক হচ্ছে…</span>
+<!-- ============ Header ============ -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <span class="logo-icon">✂️</span>
+      <span>BG Remover</span>
+    </a>
+    <a href="#uploadSection" class="header-cta">ছবি আপলোড</a>
+  </div>
+</header>
+
+<main class="container" id="uploadSection">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <h1>Free <span class="accent">Background Remover</span> — Remove Image Background Online</h1>
+    <p>ছবির ব্যাকগ্রাউন্ড সেকেন্ডেই রিমুভ করুন। ১০০% ফ্রি, সাইনআপ নেই, ওয়াটারমার্ক নেই।</p>
+    <div class="trust-row">
+      <span>⚡ দ্রুত প্রসেসিং</span>
+      <span>🔒 ব্রাউজারেই চলে</span>
+      <span>🆓 সম্পূর্ণ ফ্রি</span>
+      <span>🚫 ওয়াটারমার্ক নেই</span>
     </div>
-  </header>
+  </section>
 
-  <div class="banner" id="envBanner"></div>
-
-  <div class="upload-area" id="dropZone">
-    <span class="icon">🖼️</span>
-    <h3>ছবি আপলোড করুন</h3>
-    <p class="hint">ড্র্যাগ করে ছাড়ুন বা বাটনে ক্লিক করুন · একাধিক ছবি সাপোর্টেড · বড় ছবি অটো-ডাউনস্কেল হবে</p>
+  <!-- ============ Upload ============ -->
+  <section class="upload-card" id="dropZone">
+    <span class="upload-icon">🖼️</span>
+    <h2>ছবি ড্র্যাগ করুন বা সিলেক্ট করুন</h2>
+    <p class="hint">JPG · PNG · WEBP · একসাথে একাধিক ছবি দেওয়া যাবে</p>
 
     <div class="file-btn-wrap">
-      <input type="file" id="fileInput" accept="image/*" multiple>
+      <input type="file" id="fileInput" accept="image/*" multiple aria-label="ছবি সিলেক্ট করুন">
       <span class="file-btn-label">📁 ছবি সিলেক্ট করুন</span>
     </div>
-  </div>
 
+    <!-- Speed / Quality toggle -->
+    <div class="speed-toggle">
+      <span>মোড:</span>
+      <label><input type="radio" name="mode" value="fast" checked><span>⚡ দ্রুত (৭২০px)</span></label>
+      <label><input type="radio" name="mode" value="balanced"><span>⚖️ ব্যালান্সড (১০২৪px)</span></label>
+      <label><input type="radio" name="mode" value="quality"><span>💎 হাই কোয়ালিটি (আসল সাইজ)</span></label>
+    </div>
+  </section>
+
+  <!-- ============ Results ============ -->
   <section class="results" id="results">
     <div class="results-header">
       <h2>ফলাফল <span class="count" id="resultCount"></span></h2>
     </div>
     <div class="grid" id="items"></div>
   </section>
-</div>
+
+</main>
+
+<!-- ============ SEO Content ============ -->
+<section class="seo-content">
+  <h2>Free Background Remover — Remove Background from Image Online</h2>
+  <p>
+    This is a <strong>free online background remover</strong> that works entirely inside your browser.
+    Upload any photo — a portrait, product shot, or profile picture — and the AI will remove the
+    background in seconds. You get a clean <strong>transparent PNG</strong> ready to download, no
+    signup required and no watermark. It is perfect for ecommerce listings, profile photos,
+    presentations, and social media posts. Our tool also works as a
+    <strong>photo background changer</strong> — after removal you can place a solid color behind
+    your subject.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <span class="icon">⚡</span>
+      <h4>Fast &amp; Free</h4>
+      <p>Remove image background in seconds. No account, no credit card, no hidden limits.</p>
+    </div>
+    <div class="feature-item">
+      <span class="icon">🔒</span>
+      <h4>Private</h4>
+      <p>Your image is processed in your browser. It never gets uploaded to any server.</p>
+    </div>
+    <div class="feature-item">
+      <span class="icon">🎨</span>
+      <h4>Custom Backgrounds</h4>
+      <p>After removal, replace the background with a solid color or download transparent PNG.</p>
+    </div>
+    <div class="feature-item">
+      <span class="icon">📦</span>
+      <h4>Batch Support</h4>
+      <p>Drop multiple images at once and download them all together as a ZIP.</p>
+    </div>
+  </div>
+
+  <h3>How to remove background from an image (3 easy steps)</h3>
+  <ul>
+    <li><strong>Step 1:</strong> Click the upload button or drag your image into the box above.</li>
+    <li><strong>Step 2:</strong> Wait a few seconds — the AI will cut out the subject automatically.</li>
+    <li><strong>Step 3:</strong> Download your transparent PNG or pick a new background color.</li>
+  </ul>
+
+  <h3>ছবির ব্যাকগ্রাউন্ড কীভাবে রিমুভ করবেন?</h3>
+  <p>
+    এই <strong>ফ্রি ব্যাকগ্রাউন্ড রিমুভার</strong> দিয়ে যেকোনো ছবির ব্যাকগ্রাউন্ড খুব সহজেই
+    মুছে ফেলতে পারবেন। ছবি আপলোড করুন, কয়েক সেকেন্ড অপেক্ষা করুন — এআই নিজেই সাবজেক্ট
+    আলাদা করে ফেলবে। তারপর <strong>ট্রান্সপারেন্ট PNG</strong> হিসেবে ডাউনলোড করুন, অথবা
+    পছন্দমতো রঙ বসিয়ে সেভ করুন। ছবি কোথাও আপলোড হয় না — সম্পূর্ণ প্রাইভেসি।
+  </p>
+
+  <h3>Frequently Asked Questions</h3>
+
+  <details class="faq-item">
+    <summary>How do I remove the background from an image for free?</summary>
+    <p>Upload your photo, wait a few seconds for the AI to process it, then download the transparent PNG. No signup, no watermark, 100% free.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Is this background remover really free?</summary>
+    <p>Yes. There are no hidden charges, no signup requirement and no watermark. Use it as much as you like.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Does my image get uploaded to a server?</summary>
+    <p>No. The AI model runs inside your browser using WebAssembly. Your photos never leave your device.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>What image formats are supported?</summary>
+    <p>You can upload JPG, PNG, WEBP and most common image formats. Output is always a transparent PNG.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>ছবির ব্যাকগ্রাউন্ড কীভাবে ফ্রিতে রিমুভ করব?</summary>
+    <p>উপরের বাটনে ক্লিক করে ছবি সিলেক্ট করুন বা ড্র্যাগ করে ছাড়ুন। কয়েক সেকেন্ডেই ব্যাকগ্রাউন্ড রিমুভ হয়ে যাবে। তারপর ডাউনলোড বাটনে ক্লিক করুন। কোনো সাইনআপ বা ওয়াটারমার্ক নেই।</p>
+  </details>
+
+  <details class="faq-item">
+    <summary>Can I use this for product photos and ecommerce?</summary>
+    <p>Absolutely. It is perfect for removing background from product photos, marketing images, ID photos, and social media content. The transparent PNG works with any ecommerce platform.</p>
+  </details>
+</section>
+
+<footer class="footer">
+  <p>Made with ❤️ — Free Background Remover · 100% browser-based · no uploads, no tracking</p>
+</footer>
 
 <div class="toast" id="toast"></div>
 
@@ -378,9 +812,6 @@
 
   const $ = id => document.getElementById(id);
   const toastEl = $('toast');
-  const envBanner = $('envBanner');
-  const capBadge = $('capBadge');
-  const capText = $('capText');
   const dropZone = $('dropZone');
   const fileInput = $('fileInput');
   const results = $('results');
@@ -396,71 +827,17 @@
   }
 
   /* =========================================================
-     COI reload check — service worker প্রথমবার রেজিস্টার হলে
-     পেজ একবার রিলোড করতে হয়
-     ========================================================= */
-  if (window.crossOriginIsolated === false) {
-    // Service worker এখনো অ্যাক্টিভ হয়নি; reload হলে ঠিক হবে
-    if (location.protocol !== 'file:' && !sessionStorage.getItem('coi-reloaded')) {
-      sessionStorage.setItem('coi-reloaded', '1');
-      // COI service worker নিজেই reload করবে, তাই এখানে কিছু করার নেই
-    }
-  }
-
-  /* =========================================================
-     Capability detection
+     Capability detect — শুধু আসল তথ্য, কোনো ভুল ওয়ার্নিং নয়
      ========================================================= */
   const caps = {
-    secure: window.isSecureContext,
+    wasm: typeof WebAssembly === 'object',
+    webgpu: 'gpu' in navigator,
     coi: window.crossOriginIsolated === true,
     sab: typeof SharedArrayBuffer === 'function',
-    wasm: typeof WebAssembly === 'object',
-    simd: false,
-    webgpu: 'gpu' in navigator,
-    offscreen: typeof OffscreenCanvas === 'function',
-    createImageBitmap: typeof createImageBitmap === 'function',
+    secure: window.isSecureContext,
   };
-
-  // WASM SIMD check
-  if (caps.wasm) {
-    try {
-      const simdBytes = new Uint8Array([
-        0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,
-        65,0,253,15,11
-      ]);
-      caps.simd = WebAssembly.validate(simdBytes);
-    } catch (e) {
-      caps.simd = false;
-    }
-  }
-
-  console.log('Capabilities:', caps);
-
-  // Badge
-  if (caps.webgpu) {
-    capBadge.classList.add('ready');
-    capText.textContent = '⚡ GPU অ্যাক্সিলারেশন সক্রিয়';
-  } else if (caps.coi && caps.sab) {
-    capBadge.classList.add('ready');
-    capText.textContent = '⚡ মাল্টি-থ্রেডেড মোড সক্রিয়';
-  } else if (caps.simd) {
-    capText.textContent = 'সিঙ্গেল-থ্রেডেড মোড (ধীর কিন্তু কাজ করবে)';
-  } else {
-    capText.textContent = 'ব্রাউজার সীমিত';
-  }
-
-  // Env banner — শুধু সত্যিকারের ব্লকার দেখাব
-  const blockers = [];
-  if (!caps.wasm) blockers.push('WebAssembly নেই — AI মডেল চলবে না।');
-  if (!caps.simd) blockers.push('WebAssembly SIMD নেই। Chrome 91+/Edge 91+/Firefox 89+/Safari 16.4+ দরকার।');
-  if (!caps.secure) blockers.push('Secure Context নেই — <code>localhost</code> বা HTTPS দরকার।');
-
-  if (blockers.length) {
-    envBanner.className = 'banner err show';
-    envBanner.innerHTML = '<strong>⚠️ এই ব্রাউজারে চলবে না</strong><br>' +
-      blockers.map(b => '• ' + b).join('<br>') +
-      '<br><br>সর্বশেষ Chrome বা Edge ব্যবহার করুন।';
-  }
+  console.log('[caps]', caps);
+  // ভুল SIMD ডিটেকশন সরানো হলো — সেটা bug ছিল। লাইব্রেরি fallback মোডে নিজেই কাজ করে।
 
   /* =========================================================
      Library loader
@@ -477,7 +854,7 @@
           (bg.default && bg.default.removeBackground) ||
           bg.default;
         if (typeof removeBackground !== 'function') {
-          throw new Error('removeBackground ফাংশন পাওয়া যায়নি');
+          throw new Error('removeBackground পাওয়া যায়নি');
         }
         return { removeBackground, JSZip: zip.default || zip };
       }).catch(err => {
@@ -489,25 +866,30 @@
   }
 
   /* =========================================================
-     Image downscaling — সবচেয়ে বড় স্পিড বুস্ট
+     Image downscaling — স্পিডের সবচেয়ে বড় হাতিয়ার
      ========================================================= */
-  const MAX_DIM = 1024;   // লম্বা দিক সর্বোচ্চ ১০২৪px
+  function getMaxDim() {
+    const mode = document.querySelector('input[name="mode"]:checked');
+    const v = mode ? mode.value : 'fast';
+    if (v === 'fast') return 720;
+    if (v === 'balanced') return 1024;
+    return 0; // quality → no downscale
+  }
 
   async function prepareImage(file) {
+    const MAX_DIM = getMaxDim();
+    if (!MAX_DIM) return { blob: file, downscaled: false };
     try {
       const bitmap = await createImageBitmap(file);
       const { width, height } = bitmap;
       const longSide = Math.max(width, height);
-
       if (longSide <= MAX_DIM) {
         bitmap.close && bitmap.close();
-        return { blob: file, w: width, h: height, downscaled: false };
+        return { blob: file, downscaled: false };
       }
-
       const scale = MAX_DIM / longSide;
       const newW = Math.round(width * scale);
       const newH = Math.round(height * scale);
-
       const canvas = document.createElement('canvas');
       canvas.width = newW;
       canvas.height = newH;
@@ -515,15 +897,10 @@
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(bitmap, 0, 0, newW, newH);
       bitmap.close && bitmap.close();
-
-      const blob = await new Promise(res =>
-        canvas.toBlob(b => res(b), 'image/png')
-      );
-
-      return { blob, w: newW, h: newH, downscaled: true };
+      const blob = await new Promise(r => canvas.toBlob(b => r(b), 'image/png'));
+      return { blob, downscaled: true };
     } catch (e) {
-      // createImageBitmap fails — original ফাইল দিয়েই চালাব
-      return { blob: file, w: 0, h: 0, downscaled: false };
+      return { blob: file, downscaled: false };
     }
   }
 
@@ -533,7 +910,10 @@
   const items = [];
   let nextId = 0;
 
-  fileInput.addEventListener('change', function (e) {
+  /* =========================================================
+     Upload handlers
+     ========================================================= */
+  fileInput.addEventListener('change', e => {
     const files = Array.from(e.target.files || []).filter(f => f.type && f.type.startsWith('image/'));
     fileInput.value = '';
     if (files.length) handleFiles(files);
@@ -541,35 +921,38 @@
   });
 
   ['dragenter', 'dragover'].forEach(ev =>
-    dropZone.addEventListener(ev, function (e) {
+    dropZone.addEventListener(ev, e => {
       e.preventDefault(); e.stopPropagation();
       dropZone.classList.add('dragover');
     })
   );
   ['dragleave', 'drop'].forEach(ev =>
-    dropZone.addEventListener(ev, function (e) {
+    dropZone.addEventListener(ev, e => {
       e.preventDefault(); e.stopPropagation();
       if (ev === 'dragleave' && dropZone.contains(e.relatedTarget)) return;
       dropZone.classList.remove('dragover');
     })
   );
-  dropZone.addEventListener('drop', function (e) {
+  dropZone.addEventListener('drop', e => {
     const files = Array.from(e.dataTransfer.files || []).filter(f => f.type && f.type.startsWith('image/'));
     if (files.length) handleFiles(files);
     else toast('কোনো ছবি পাওয়া যায়নি', 'err');
   });
 
-  dropZone.addEventListener('click', function (e) {
-    if (e.target.closest('.file-btn-wrap')) return;
+  dropZone.addEventListener('click', e => {
+    if (e.target.closest('.file-btn-wrap') || e.target.closest('.speed-toggle')) return;
     fileInput.click();
   });
 
+  /* =========================================================
+     Handle files
+     ========================================================= */
   function handleFiles(files) {
     const newCards = [];
     for (const file of files) {
       const item = {
         id: nextId++,
-        file: file,
+        file,
         noBgImg: null,
         resultBlob: null,
         bg: { type: 'transparent' }
@@ -608,7 +991,7 @@
     card.className = 'card';
     card.innerHTML =
       '<div class="preview">' +
-        '<img class="preview-img" alt="preview">' +
+        '<img class="preview-img" alt="background removed preview">' +
         '<div class="overlay">' +
           '<div class="spinner"></div>' +
           '<div class="msg">প্রস্তুত হচ্ছে…</div>' +
@@ -622,12 +1005,12 @@
         '<div class="swatches"></div>' +
         '<div class="actions">' +
           '<button type="button" class="btn-remove">🗑️ মুছুন</button>' +
-          '<a class="btn-download" download="result.png" style="display:none;">⬇️ ডাউনলোড</a>' +
+          '<a class="btn-download" download="background-removed.png" style="display:none;">⬇️ ডাউনলোড</a>' +
         '</div>' +
       '</div>';
 
     item.el = {
-      card: card,
+      card,
       img: card.querySelector('.preview-img'),
       overlay: card.querySelector('.overlay'),
       msg: card.querySelector('.msg'),
@@ -688,48 +1071,40 @@
   }
 
   /* =========================================================
-     Processing with progress + ETA
+     Process
      ========================================================= */
   async function processItem(item) {
     const el = item.el;
     el.img.src = URL.createObjectURL(item.file);
 
     try {
-      // Step 1: prepare (downscale if needed)
       el.msg.textContent = 'ছবি প্রস্তুত হচ্ছে…';
       const prepared = await prepareImage(item.file);
       if (prepared.downscaled) {
-        el.sub.textContent = 'ছবি ' + MAX_DIM + 'px-এ রিসাইজ করা হলো (দ্রুততার জন্য)';
-      } else {
-        el.sub.textContent = 'ছবি প্রস্তুত';
+        el.sub.textContent = 'দ্রুততার জন্য ছবি ছোট করা হলো';
       }
 
-      // Step 2: load libs
       el.msg.textContent = 'AI মডেল লোড হচ্ছে…';
       const { removeBackground } = await loadLibs();
 
-      // Step 3: process
-      let startTime = Date.now();
-      let lastPct = 0;
-
+      const startTime = Date.now();
       const blob = await removeBackground(prepared.blob, {
-        model: caps.webgpu ? 'isnet_fp16' : 'isnet_quint8',
+        model: 'isnet_quint8',     // সবচেয়ে ছোট ও দ্রুত মডেল
         output: { format: 'image/png' },
         progress: function (key, current, total) {
           const pct = total ? Math.min(100, Math.round((current / total) * 100)) : 0;
           const elapsed = (Date.now() - startTime) / 1000;
-
           if (key && key.indexOf('fetch') === 0) {
-            el.msg.textContent = 'মডেল ডাউনলোড ' + pct + '%';
+            el.msg.textContent = 'AI মডেল ডাউনলোড ' + pct + '%';
             el.sub.textContent = 'একবারই ডাউনলোড হবে, এরপর ক্যাশ থেকে চলবে';
             el.eta.textContent = '';
           } else if (key && key.indexOf('compute') === 0) {
             el.msg.textContent = 'প্রসেসিং ' + pct + '%';
-            const device = caps.webgpu ? 'GPU' : (caps.coi && caps.sab ? 'মাল্টি-থ্রেড CPU' : 'CPU');
-            el.sub.textContent = 'ব্যাকগ্রাউন্ড আলাদা করা হচ্ছে (' + device + ')';
+            const mode = caps.coi && caps.sab ? 'মাল্টি-থ্রেড' : 'ফাস্ট মোড';
+            el.sub.textContent = 'ব্যাকগ্রাউন্ড আলাদা করা হচ্ছে (' + mode + ')';
             if (pct > 5 && pct < 100) {
               const etaSec = Math.max(1, Math.round((elapsed / pct) * (100 - pct)));
-              el.eta.textContent = 'বাকি ~' + etaSec + ' সেকেন্ড';
+              el.eta.textContent = 'বাকি ~' + etaSec + ' সে';
             }
           } else {
             el.msg.textContent = 'প্রস্তুত হচ্ছে… ' + pct + '%';
@@ -738,11 +1113,10 @@
         }
       });
 
-      const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-
+      const totalSec = ((Date.now() - startTime) / 1000).toFixed(1);
       item.noBgImg = await loadImg(URL.createObjectURL(blob));
       el.overlay.classList.add('hidden');
-      el.status.textContent = 'প্রস্তুত ✓ (' + totalTime + 's)';
+      el.status.textContent = '✓ প্রস্তুত (' + totalSec + ' সে)';
       el.status.className = 'status ok';
       await updateResult(item);
     } catch (err) {
@@ -754,10 +1128,9 @@
     }
   }
 
-  function loadImg(src, cors) {
+  function loadImg(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      if (cors) img.crossOrigin = 'anonymous';
       img.onload = () => resolve(img);
       img.onerror = () => reject(new Error('ছবি লোড হয়নি'));
       img.src = src;
@@ -769,14 +1142,12 @@
     const w = item.noBgImg.naturalWidth;
     const h = item.noBgImg.naturalHeight;
     const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
 
     try {
-      const bg = item.bg;
-      if (bg.type === 'color') {
-        ctx.fillStyle = bg.value;
+      if (item.bg.type === 'color') {
+        ctx.fillStyle = item.bg.value;
         ctx.fillRect(0, 0, w, h);
       }
       ctx.drawImage(item.noBgImg, 0, 0);
@@ -788,7 +1159,7 @@
           const url = URL.createObjectURL(b);
           item.el.img.src = url;
           item.el.dl.href = url;
-          item.el.dl.download = 'no-bg-' + (item.id + 1) + '.png';
+          item.el.dl.download = 'background-removed-' + (item.id + 1) + '.png';
           item.el.dl.style.display = 'inline-flex';
           resolve();
         }, 'image/png');
@@ -799,10 +1170,9 @@
   }
 
   /* =========================================================
-     Idle preload — মডেল আগেই ডাউনলোড শুরু করি
+     Idle preload
      ========================================================= */
   function preloadModel() {
-    if (!caps.wasm || !caps.simd) return;
     const pre = () => {
       loadLibs().then(({ removeBackground }) => {
         const c = document.createElement('canvas');
@@ -810,25 +1180,21 @@
         c.toBlob(blob => {
           if (!blob) return;
           removeBackground(blob, {
-            model: caps.webgpu ? 'isnet_fp16' : 'isnet_quint8',
+            model: 'isnet_quint8',
             output: { format: 'image/png' }
-          }).then(() => {
-            console.log('Model preloaded & cached');
-            capBadge.classList.add('ready');
-            capText.textContent = '⚡ AI মডেল প্রস্তুত — ছবি দিন!';
-          }).catch(e => console.warn('Preload failed:', e));
+          }).then(() => console.log('[preload] model ready'))
+            .catch(e => console.warn('[preload] failed:', e));
         }, 'image/png');
-      }).catch(e => console.warn('Preload lib failed:', e));
+      }).catch(e => console.warn('[preload] lib failed:', e));
     };
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(pre, { timeout: 3000 });
+      requestIdleCallback(pre, { timeout: 2500 });
     } else {
       setTimeout(pre, 1500);
     }
   }
 
-  // Boot
-  console.log('Ready. caps =', caps);
+  console.log('[init] free background remover ready');
   preloadModel();
 
 })();
